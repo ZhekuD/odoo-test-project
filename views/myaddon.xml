@@ -17,11 +17,13 @@
                     </header>
                     <sheet>
                         <group>
-                            <field name='parents_path'/>
+                            <!-- <field name='parents_path'/> -->
                             <field name="name"/>
                             <field name="url"/>
                             <field name="parent_id"/>
-                            <field name="parent_ids" widget='many2many_tags'/>
+                            <!-- <field name="parent_ids" widget='many2many_tags' readonly="True"/> -->
+                            <button name="recalculate_parents" type="object"
+                            string="Recalculate parents!" class="oe_highlight"/>
                             <field name="description"/>
                         </group>
                         <notebook>
@@ -59,7 +61,8 @@
                     <field name="parent_id"/>
                     <field name="description"/>
                     <field name="parents_path"/>
-                    <button string="Button"/>
+                    <field name="parent_ids" widget='many2many_tags'/>
+                    <!-- <button string="Button" type='object' name='recalculate_parents'/> -->
                 </tree>
             </field>
 

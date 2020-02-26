@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
 from odoo import models, fields, api
 from odoo.addons.http_routing.models.ir_http import slugify
+import odoo
 import logging
 
 logger = logging.getLogger("MODEL_APP")
@@ -28,8 +28,8 @@ class Course(models.Model):
     parents_path = fields.Char(
         compute='parent_path_string',
         default='/',
-        search='_search_in_path'
-        # store=True,
+        # search='_search_in_path'
+        store=True,
     )
     parent_ids = fields.Many2many(
         comodel_name='openacademy.course',
@@ -38,8 +38,37 @@ class Course(models.Model):
         column2='parent_id'
     )
 
+
+    @api.constrains('parent_id')
+    def _check_course_recursion(self):
+        if not self._check_recursion():
+            raise ValidationError # (_('Error!'))
+        return True
+
+
+    @api.model
+    def create(self, vals_list):
+        created_obj = super().create(vals_list)
+        if 'parent_id' in vals_list.keys():
+            temp_obj = created_obj
+            while temp_obj.parent_id:
+                created_obj.parent_ids += temp_obj.parent_id
+                temp_obj = object.parent_id
+        return created_obj
+
+
     def write(self, vals):
         super().write(vals)
+        if 'parent_id' in vals.keys():
+            search_result = self.search([('id', 'child_of', self.id)])
+            for record in search_result:
+                object = record
+                record.parent_ids = None
+                while object.parent_id:
+                    record.parent_ids += object.parent_id
+                    object = object.parent_id
+
+
 
     @api.depends('parent_id', 'parents_path')
     def parent_path_string(self):
@@ -52,9 +81,15 @@ class Course(models.Model):
                     ' / ' + record.name
 
     def recalculate_parents(self):
-        pass
-        logger.info('---------->')
-        logger.info(str(self.ids))
+        # def create_path_string(obj):
+        #     if obj.parent_id:
+        #         return ' / '.join((obj.parent_id.parents_path, obj.name))
+        #     else:
+        #         return f'//{obj.name}'
+        temp_self = self
+        while temp_self.parent_id:
+            self.parent_ids += temp_self.parent_id
+            temp_self = temp_self.parent_id
 
     def next_status(self):
         if self.product_status == 'created':
@@ -73,20 +108,12 @@ class Course(models.Model):
         if self.name:
             self.url = slugify(self.name)
 
-    def _search_in_path(self, operator, value):
-        recs = self.search([]).filtered(lambda x: value in x.parents_path)
-        result = recs.ids if recs.ids else ()
-        logger.info('---------->')
-        logger.info(str(self.ids))
-        return [('id', 'in', result)]
-
-
-
-#
-# class ParentsPathModel():
-#     _name = 'parents_path_model'
-
-
+    # def _search_in_path(self, operator, value):
+    #     recs = self.search([]).filtered(lambda x: value in x.parents_path)
+    #     result = recs.ids if recs.ids else ()
+    #     logger.info('---------->')
+    #     logger.info(str(recs.ids))
+    #     return [('id', 'in', result)]
 
 class Sessions(models.Model):
     _name = 'openacademy.session'
