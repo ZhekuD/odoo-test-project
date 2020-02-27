@@ -1,1 +1,0 @@
-/home/zhekud/python/odoo/odoo-13.0/odoo/odoo/models.py

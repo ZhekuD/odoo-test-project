@@ -1,16 +1,17 @@
-# -*- coding: utf-8 -*-
 {
     'name': "myaddon",
 
     'summary': "my first test addon",
 
-    'description': "This is should be a long description of module's purpose, but it isn't",
+    'description': "This is should be a long description of module's purpose, \
+    but it isn't",
 
     'author': "Me",
     'website': "http://www.me.com",
 
     # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
+    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data
+    # /ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
     'version': '0.1',

@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from odoo.addons.http_routing.models.ir_http import slugify
-import odoo
 import logging
 
 logger = logging.getLogger("MODEL_APP")
 logger.setLevel(logging.INFO)
+
 
 class Course(models.Model):
     _name = 'openacademy.course'
@@ -38,13 +37,11 @@ class Course(models.Model):
         column2='parent_id'
     )
 
-
     @api.constrains('parent_id')
     def _check_course_recursion(self):
         if not self._check_recursion():
-            raise ValidationError # (_('Error!'))
+            raise ValidationError  # (_('Error!'))
         return True
-
 
     @api.model
     def create(self, vals_list):
@@ -56,7 +53,6 @@ class Course(models.Model):
                 temp_obj = object.parent_id
         return created_obj
 
-
     def write(self, vals):
         super().write(vals)
         if 'parent_id' in vals.keys():
@@ -67,8 +63,6 @@ class Course(models.Model):
                 while object.parent_id:
                     record.parent_ids += object.parent_id
                     object = object.parent_id
-
-
 
     @api.depends('parent_id', 'parents_path')
     def parent_path_string(self):
@@ -108,12 +102,6 @@ class Course(models.Model):
         if self.name:
             self.url = slugify(self.name)
 
-    # def _search_in_path(self, operator, value):
-    #     recs = self.search([]).filtered(lambda x: value in x.parents_path)
-    #     result = recs.ids if recs.ids else ()
-    #     logger.info('---------->')
-    #     logger.info(str(recs.ids))
-    #     return [('id', 'in', result)]
 
 class Sessions(models.Model):
     _name = 'openacademy.session'
